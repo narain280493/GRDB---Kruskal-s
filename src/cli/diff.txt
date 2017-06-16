@@ -1,0 +1,1471 @@
+commit a6c957631181227cbdda073abd1fa1f6e9871ac3
+Author: narainsharma <narain280493@gmail.com>
+Date:   Thu Apr 27 20:20:43 2017 -0600
+
+    add include files
+
+diff --git a/include/tuple.h b/include/tuple.h
+index faa14a7..2aab2eb 100644
+--- a/include/tuple.h
++++ b/include/tuple.h
+@@ -24,6 +24,7 @@ void tuple_set_enum(
+ 	enum_list_t el);
+ 
+ void tuple_print(tuple_t t, enum_list_t el);
++int get_tuple_weight(tuple_t t, enum_list_t el);
+ 
+ /* Getters */
+ char   tuple_get_char(char *tbuf);
+diff --git a/src/db/libdb.a b/src/db/libdb.a
+index 4f3c574..0322271 100644
+Binary files a/src/db/libdb.a and b/src/db/libdb.a differ
+
+commit e4bc1124026a13b61c74a69c30c7dcf4a36f376c
+Author: narainsharma <narain280493@gmail.com>
+Date:   Thu Apr 27 20:17:59 2017 -0600
+
+    format output
+
+diff --git a/src/cli/cli_kruskal.c b/src/cli/cli_kruskal.c
+index ef6493b..4b327a7 100644
+--- a/src/cli/cli_kruskal.c
++++ b/src/cli/cli_kruskal.c
+@@ -49,7 +49,6 @@ graph_t sort_given_graph(graph_t g)
+  int id2 =0;
+  int e_weight = 0;
+  int f_weight = 0;
+-// printf("sorting graphs: \n");
+ 
+  for (e = g->e; e!= NULL; e = e->next) 
+  {
+@@ -76,7 +75,7 @@ graph_t sort_given_graph(graph_t g)
+ 		if(e_weight > f_weight)
+ 		 {
+ 					temp = e;
+-					edge_print(temp);
++					//edge_print(temp);
+ 					id1 = e->id1;
+ 					id2 = e->id2;
+ 					t = e-> tuple;
+@@ -136,7 +135,6 @@ void run_kruskal(graph_t g, int num_vertices, int num_edges)
+ {
+  int parent[20];
+  int V = num_vertices;
+- int i=0;
+  int e=0;
+  int total_cost =0;
+ 
+@@ -261,10 +259,10 @@ void run_kruskal(graph_t g, int num_vertices, int num_edges)
+ 
+ 		} 
+ 		
+-		printf("result graph:");
++		printf("result graph: \n");
+ 		graph_print(result_graph,1);
+ 
+-		printf("total cost: %d \n", total_cost);
++		printf("\n total cost: %d \n", total_cost);
+ 		
+ 		return;
+ }
+diff --git a/src/cli/cli_kruskal.o b/src/cli/cli_kruskal.o
+index f3ba889..ac5bd14 100644
+Binary files a/src/cli/cli_kruskal.o and b/src/cli/cli_kruskal.o differ
+diff --git a/src/cli/db b/src/cli/db
+index a81fac0..e415223 100755
+Binary files a/src/cli/db and b/src/cli/db differ
+
+commit 6de8a69bf47ce7f71d54b298aad509870a152e9f
+Author: narainsharma <narain280493@gmail.com>
+Date:   Thu Apr 27 19:53:27 2017 -0600
+
+    bug fix: disappearing edges
+
+diff --git a/src/cli/cli_kruskal.c b/src/cli/cli_kruskal.c
+index f9a3484..ef6493b 100644
+--- a/src/cli/cli_kruskal.c
++++ b/src/cli/cli_kruskal.c
+@@ -161,13 +161,13 @@ void run_kruskal(graph_t g, int num_vertices, int num_edges)
+ 
+ //printf("initialized parent array \n");
+ 		
+-	
++	current_edge = sorted_graph->e;
+ 		// terminating condition for mst
+ 	while(e < (V-1))
+ 	{
+ 		 
+ 		 	//printf("found %d edges in the MST: %d",e);
+-		 	current_edge = sorted_graph->e;
++		 
+ 		 	//printf(" looking to add edge\n");
+ 
+ 			int x = find(parent, current_edge->id1);
+@@ -257,7 +257,7 @@ void run_kruskal(graph_t g, int num_vertices, int num_edges)
+ 					 
+ 			}
+ 				// Else discard the next_edge
+-			sorted_graph->e = sorted_graph->e->next;
++			current_edge = current_edge->next;
+ 
+ 		} 
+ 		
+diff --git a/src/cli/cli_kruskal.o b/src/cli/cli_kruskal.o
+index 8563887..f3ba889 100644
+Binary files a/src/cli/cli_kruskal.o and b/src/cli/cli_kruskal.o differ
+diff --git a/src/cli/db b/src/cli/db
+index 1a78e84..a81fac0 100755
+Binary files a/src/cli/db and b/src/cli/db differ
+
+commit 83feadd32dd12c108de6c143bd8176afb0fede18
+Author: narainsharma <narain280493@gmail.com>
+Date:   Thu Apr 27 17:40:16 2017 -0600
+
+    added schema tuple and total cost to result graph
+
+diff --git a/src/cli/cli_kruskal.c b/src/cli/cli_kruskal.c
+index 4e36a68..f9a3484 100644
+--- a/src/cli/cli_kruskal.c
++++ b/src/cli/cli_kruskal.c
+@@ -9,19 +9,19 @@
+ 
+ int find(int parent[], int i)
+ {
+-	printf("inside find function for %d \n", i);
++	//printf("inside find function for %d \n", i);
+ 	return parent[i];
+ }
+  
+ int Union(int parent[], int v1, int v2)
+ { 
+ 
+- printf("inside union function: v1= %d \t v2= %d \n",v1,v2);
++// printf("inside union function: v1= %d \t v2= %d \n",v1,v2);
+  if(v1 != v2)
+  {
+-		printf("v1 !=v2\n ");
++	//	printf("v1 !=v2\n ");
+ 		parent[v2]=v1;
+-		printf("returning \n");
++	//	printf("returning \n");
+ 		return 1;
+ 	}
+  
+@@ -49,7 +49,7 @@ graph_t sort_given_graph(graph_t g)
+  int id2 =0;
+  int e_weight = 0;
+  int f_weight = 0;
+- printf("sorting graphs: \n");
++// printf("sorting graphs: \n");
+ 
+  for (e = g->e; e!= NULL; e = e->next) 
+  {
+@@ -58,7 +58,7 @@ graph_t sort_given_graph(graph_t g)
+ 	{
+ 	 
+ 	 e_weight = get_tuple_weight(e->tuple, g->el);
+-	 printf("e_weight is: %d \n", e_weight);
++	// printf("e_weight is: %d \n", e_weight);
+ 	
+ 	}
+ 
+@@ -69,7 +69,7 @@ graph_t sort_given_graph(graph_t g)
+ 		 {
+ 			
+ 			f_weight = get_tuple_weight(f->tuple, g->el);
+-			printf("f_weight is: %d, e_weight is: %d \n", f_weight, e_weight);
++			//printf("f_weight is: %d, e_weight is: %d \n", f_weight, e_weight);
+ 		 
+ 		 }
+ 
+@@ -92,8 +92,8 @@ graph_t sort_given_graph(graph_t g)
+ 					f->tuple = t;
+ 	 		}
+ 
+-			printf(" e's ids: %d %d\n",e->id1, e->id2 );
+-			printf(" f's ids: %d %d\n",f->id1, f->id2 );
++		//	printf(" e's ids: %d %d\n",e->id1, e->id2 );
++		//	printf(" f's ids: %d %d\n",f->id1, f->id2 );
+ 		}	
+ 	
+  }
+@@ -116,14 +116,14 @@ graph_t init_graph(int id1)
+  vertex_init(v);
+  v->id = id1;
+ 
+- printf("init vertex\n");
++ //printf("init vertex\n");
+  // Create new graph /
+  temp = (graph_t) malloc(sizeof(struct graph));
+  assert (temp != NULL);
+  graph_init(temp);
+  graph_insert_vertex(temp, v);
+ 
+- printf("init the graph:\n");
++// printf("init the graph:\n");
+  if (graphs == NULL)
+ 	current = temp;
+ 
+@@ -149,8 +149,8 @@ void run_kruskal(graph_t g, int num_vertices, int num_edges)
+  
+  sorted_graph = sort_given_graph(g);
+ 
+- graph_print(sorted_graph,1);
+- printf("sorted \n");
++ //graph_print(sorted_graph,1);
++ //printf("sorted \n");
+ 
+  
+  //initializing parent vector
+@@ -159,16 +159,16 @@ void run_kruskal(graph_t g, int num_vertices, int num_edges)
+ 			parent[j] = j;
+ 	}
+ 
+-printf("initialized parent array \n");
++//printf("initialized parent array \n");
+ 		
+ 	
+ 		// terminating condition for mst
+ 	while(e < (V-1))
+ 	{
+ 		 
+-		 	printf("found %d edges in the MST: %d",e);
++		 	//printf("found %d edges in the MST: %d",e);
+ 		 	current_edge = sorted_graph->e;
+-		 	printf(" looking to add edge\n");
++		 	//printf(" looking to add edge\n");
+ 
+ 			int x = find(parent, current_edge->id1);
+ 			int y = find(parent, current_edge->id2);
+@@ -180,15 +180,15 @@ printf("initialized parent array \n");
+ 			
+ 			if (Union(parent, x, y))
+ 			{
+-				printf("adding edge: ");
++				//printf("adding edge: ");
+ 				//add edge to final result
+-				edge_print(current_edge);
++				//edge_print(current_edge);
+ 
+ 				total_cost += get_tuple_weight(current_edge->tuple, sorted_graph->el);	
+ 				
+ 				if(result_graph == NULL)
+ 				{
+-					printf("result graph is null, init it.\n");
++					//printf("result graph is null, init it.\n");
+ 					result_graph = init_graph(current_edge->id1);
+ 
+ 					// add vertex id2 now. 
+@@ -207,6 +207,7 @@ printf("initialized parent array \n");
+ 					edge_init(ed);
+ 					edge_set_vertices(ed, current_edge->id1, current_edge->id2);
+ 
++					ed->tuple = current_edge->tuple;
+ 					graph_insert_edge(result_graph, ed);
+ 				}
+ 			
+@@ -238,12 +239,12 @@ printf("initialized parent array \n");
+ 							graph_insert_vertex(result_graph, w);
+ 					}
+ 
+-					
++
+ 					ed = (edge_t) malloc(sizeof(struct edge));
+ 					assert (ed != NULL);
+ 					edge_init(ed);
+ 					edge_set_vertices(ed, current_edge->id1, current_edge->id2);
+-
++					ed->tuple = current_edge->tuple;
+ 					graph_insert_edge(result_graph, ed);
+ 						 
+ 				}
+@@ -286,13 +287,13 @@ void cli_kruskal(char cmdline, int pos)
+  for (g = graphs; g != NULL; g = g->next, cnt++) 
+  {
+ 		if (g == current){
+-	 	printf("current graph: \n");
++	 	//printf("current graph: \n");
+ 	 	for(v = g->v; v != NULL; v = v->next) 
+ 	 		vertex_count++; 
+-	 	printf("vertex count is: %d \n", vertex_count);
++	 	//printf("vertex count is: %d \n", vertex_count);
+ 	 	for (e= g->e; e!= NULL; e=e->next)
+ 	 		edge_count++;
+-	 	printf("edge count is: %d \n", edge_count);
++	 	//printf("edge count is: %d \n", edge_count);
+ 	 	run_kruskal(g, vertex_count, edge_count);
+ 
+  }
+diff --git a/src/cli/cli_kruskal.o b/src/cli/cli_kruskal.o
+index 1c8c12a..8563887 100644
+Binary files a/src/cli/cli_kruskal.o and b/src/cli/cli_kruskal.o differ
+diff --git a/src/cli/db b/src/cli/db
+index beefcce..1a78e84 100755
+Binary files a/src/cli/db and b/src/cli/db differ
+
+commit 3bfb9ef8bab6f4eb9dc2a9762ba99b345fb298a5
+Author: narainsharma <narain280493@gmail.com>
+Date:   Thu Apr 27 17:25:11 2017 -0600
+
+    resolved bug in result graph
+
+diff --git a/src/cli/cli.c b/src/cli/cli.c
+index 3e63dc4..7439727 100644
+--- a/src/cli/cli.c
++++ b/src/cli/cli.c
+@@ -129,7 +129,7 @@ cli()
+ 
+ void cli_graphs_insert(graph_t g)
+ {
+-	printf("here");
++
+ 	graph_t f;
+ 
+ 	if (graphs == NULL) {
+diff --git a/src/cli/cli.o b/src/cli/cli.o
+index faea575..f91d7fb 100644
+Binary files a/src/cli/cli.o and b/src/cli/cli.o differ
+diff --git a/src/cli/cli_kruskal.c b/src/cli/cli_kruskal.c
+index 790a8d5..4e36a68 100644
+--- a/src/cli/cli_kruskal.c
++++ b/src/cli/cli_kruskal.c
+@@ -141,7 +141,7 @@ void run_kruskal(graph_t g, int num_vertices, int num_edges)
+  int total_cost =0;
+ 
+  //storing the final MST edges.
+- edge_t current_edge;
++ edge_t current_edge, ed;
+  graph_t result_graph =NULL;
+  graph_t sorted_graph;
+  vertex_t v;
+@@ -177,11 +177,14 @@ printf("initialized parent array \n");
+ 
+ 				// If including this edge does't cause cycle, include it
+ 				// in result and increment the index of result for next edge
++			
+ 			if (Union(parent, x, y))
+ 			{
+ 				printf("adding edge: ");
+ 				//add edge to final result
+-				edge_print(current_edge);	
++				edge_print(current_edge);
++
++				total_cost += get_tuple_weight(current_edge->tuple, sorted_graph->el);	
+ 				
+ 				if(result_graph == NULL)
+ 				{
+@@ -196,8 +199,17 @@ printf("initialized parent array \n");
+ 					v->id = current_edge->id2;
+ 
+ 					graph_insert_vertex(result_graph, v);
++
++					result_graph->se = sorted_graph->se;
++
++					ed = (edge_t) malloc(sizeof(struct edge));
++					assert (ed != NULL);
++					edge_init(ed);
++					edge_set_vertices(ed, current_edge->id1, current_edge->id2);
++
++					graph_insert_edge(result_graph, ed);
+ 				}
+-				/*
++			
+ 				else
+ 				{
+ 					v = graph_find_vertex_by_id(result_graph, current_edge->id1);
+@@ -225,9 +237,17 @@ printf("initialized parent array \n");
+ 
+ 							graph_insert_vertex(result_graph, w);
+ 					}
++
++					
++					ed = (edge_t) malloc(sizeof(struct edge));
++					assert (ed != NULL);
++					edge_init(ed);
++					edge_set_vertices(ed, current_edge->id1, current_edge->id2);
++
++					graph_insert_edge(result_graph, ed);
+ 						 
+ 				}
+-				*/
++				
+ 				
+ 
+ 				
+@@ -242,6 +262,8 @@ printf("initialized parent array \n");
+ 		
+ 		printf("result graph:");
+ 		graph_print(result_graph,1);
++
++		printf("total cost: %d \n", total_cost);
+ 		
+ 		return;
+ }
+diff --git a/src/cli/cli_kruskal.o b/src/cli/cli_kruskal.o
+index ffb7aae..1c8c12a 100644
+Binary files a/src/cli/cli_kruskal.o and b/src/cli/cli_kruskal.o differ
+diff --git a/src/cli/db b/src/cli/db
+index 6eb4bb7..beefcce 100755
+Binary files a/src/cli/db and b/src/cli/db differ
+
+commit 5c07923c09b10f40c6da3c516bf99fcfcfa92885
+Author: narainsharma <narain280493@gmail.com>
+Date:   Thu Apr 27 14:31:27 2017 -0600
+
+    result graph returning properly
+
+diff --git a/src/cli/cli.c b/src/cli/cli.c
+index 6dd0e37..3e63dc4 100644
+--- a/src/cli/cli.c
++++ b/src/cli/cli.c
+@@ -129,6 +129,7 @@ cli()
+ 
+ void cli_graphs_insert(graph_t g)
+ {
++	printf("here");
+ 	graph_t f;
+ 
+ 	if (graphs == NULL) {
+diff --git a/src/cli/cli.o b/src/cli/cli.o
+index f91d7fb..faea575 100644
+Binary files a/src/cli/cli.o and b/src/cli/cli.o differ
+diff --git a/src/cli/cli_kruskal.c b/src/cli/cli_kruskal.c
+index 3a5f96e..790a8d5 100644
+--- a/src/cli/cli_kruskal.c
++++ b/src/cli/cli_kruskal.c
+@@ -107,7 +107,7 @@ graph_t sort_given_graph(graph_t g)
+ graph_t init_graph(int id1)
+ {
+ 
+- graph_t g;
++ graph_t temp;
+  vertex_t v;
+ 	
+  // Create first vertex in graph /
+@@ -116,16 +116,20 @@ graph_t init_graph(int id1)
+  vertex_init(v);
+  v->id = id1;
+ 
++ printf("init vertex\n");
+  // Create new graph /
+- g = (graph_t) malloc(sizeof(struct graph));
+- assert (g != NULL);
+- graph_init(g);
+- graph_insert_vertex(g, v);
++ temp = (graph_t) malloc(sizeof(struct graph));
++ assert (temp != NULL);
++ graph_init(temp);
++ graph_insert_vertex(temp, v);
+ 
++ printf("init the graph:\n");
+  if (graphs == NULL)
+-	current = g;
+- cli_graphs_insert(g);
++	current = temp;
++
++ cli_graphs_insert(temp);
+ 
++ return temp;
+ }
+ 
+ void run_kruskal(graph_t g, int num_vertices, int num_edges)
+@@ -163,8 +167,9 @@ printf("initialized parent array \n");
+ 	{
+ 		 
+ 		 	printf("found %d edges in the MST: %d",e);
+-		 	current_edge = g->e;
++		 	current_edge = sorted_graph->e;
+ 		 	printf(" looking to add edge\n");
++
+ 			int x = find(parent, current_edge->id1);
+ 			int y = find(parent, current_edge->id2);
+ 
+@@ -174,14 +179,13 @@ printf("initialized parent array \n");
+ 				// in result and increment the index of result for next edge
+ 			if (Union(parent, x, y))
+ 			{
+-				printf("adding edge \n");
++				printf("adding edge: ");
+ 				//add edge to final result
+-				edge_print(current_edge);
+-
++				edge_print(current_edge);	
+ 				
+-				/*
+ 				if(result_graph == NULL)
+ 				{
++					printf("result graph is null, init it.\n");
+ 					result_graph = init_graph(current_edge->id1);
+ 
+ 					// add vertex id2 now. 
+@@ -193,6 +197,7 @@ printf("initialized parent array \n");
+ 
+ 					graph_insert_vertex(result_graph, v);
+ 				}
++				/*
+ 				else
+ 				{
+ 					v = graph_find_vertex_by_id(result_graph, current_edge->id1);
+@@ -223,6 +228,7 @@ printf("initialized parent array \n");
+ 						 
+ 				}
+ 				*/
++				
+ 
+ 				
+ 						// increase edge count in the spanning tree
+@@ -230,10 +236,12 @@ printf("initialized parent array \n");
+ 					 
+ 			}
+ 				// Else discard the next_edge
+-			g->e = g->e->next;
++			sorted_graph->e = sorted_graph->e->next;
+ 
+ 		} 
+ 		
++		printf("result graph:");
++		graph_print(result_graph,1);
+ 		
+ 		return;
+ }
+diff --git a/src/cli/cli_kruskal.o b/src/cli/cli_kruskal.o
+index f5fa3b4..ffb7aae 100644
+Binary files a/src/cli/cli_kruskal.o and b/src/cli/cli_kruskal.o differ
+diff --git a/src/cli/db b/src/cli/db
+index 4615515..6eb4bb7 100755
+Binary files a/src/cli/db and b/src/cli/db differ
+
+commit b4963fc0170e71f6755eb9a60a9acf7c5036cb56
+Author: narainsharma <narain280493@gmail.com>
+Date:   Thu Apr 27 13:32:26 2017 -0600
+
+    resolve bug in sort
+
+diff --git a/src/cli/cli_kruskal.c b/src/cli/cli_kruskal.c
+index 0464664..3a5f96e 100644
+--- a/src/cli/cli_kruskal.c
++++ b/src/cli/cli_kruskal.c
+@@ -9,25 +9,22 @@
+ 
+ int find(int parent[], int i)
+ {
+-
+- printf("inside find function for %d \n", i);
+-  
+-  return parent[i];
++	printf("inside find function for %d \n", i);
++	return parent[i];
+ }
+  
+ int Union(int parent[], int v1, int v2)
+ { 
+ 
+  printf("inside union function: v1= %d \t v2= %d \n",v1,v2);
+-
+  if(v1 != v2)
+  {
+-  printf("v1 !=v2\n ");
+-  parent[v2]=v1;
+-  printf("returning \n");
+-    return 1;
+-    
+-  }
++		printf("v1 !=v2\n ");
++		parent[v2]=v1;
++		printf("returning \n");
++		return 1;
++	}
++ 
+  return 0;
+ 
+ }
+@@ -35,14 +32,13 @@ int Union(int parent[], int v1, int v2)
+ // TODO: use schema values for edges as weights.
+ int sort_helper(const void* a, const void* b)
+ {
+-    struct edge* e1 = (struct edge*)a;
+-    struct edge* e2 = (struct edge*)b;
+-    return e1->tuple->s > e2->tuple->s;
++		struct edge* e1 = (struct edge*)a;
++		struct edge* e2 = (struct edge*)b;
++		return e1->tuple->s > e2->tuple->s;
+ }
+ 
+-
+-
+-graph_t sort_given_graph(graph_t g){
++graph_t sort_given_graph(graph_t g)
++{
+ 
+  assert(g!=NULL);
+  edge_t e;
+@@ -55,44 +51,51 @@ graph_t sort_given_graph(graph_t g){
+  int f_weight = 0;
+  printf("sorting graphs: \n");
+ 
+- for (e = g->e; e->next != NULL; e = e->next) {
+-
+-  if (e->tuple != NULL && 1)
+-  {
+-   e_weight = get_tuple_weight(e->tuple, g->el);
+-   printf("e_weight is: %d \n", e_weight);
+-  }
+-  for(f = e->next; f!=NULL; f=f->next){
+-
+-   if (f->tuple != NULL && 1)
+-   {
+-    f_weight = get_tuple_weight(f->tuple, g->el);
+-    printf("f_weight is: %d \n", f_weight);
+-   }
+-
+-
+-
+-  
+-  if(e_weight > f_weight)
+-   {
+-    temp = e;
+-    edge_print(temp);
+-    id1 = e->id1;
+-    id2 = e->id2;
+-    t = e-> tuple;
+-
+-    e->id1 = f->id1;
+-    e->id2 = f->id2;
+-    e->tuple = f->tuple;
+-
+-    f->id1 = id1;
+-    f->id2 = id2;
+-    f->tuple = t;
+-   }
++ for (e = g->e; e!= NULL; e = e->next) 
++ {
+ 
+-  
+-  }
+-  
++	if (e->tuple != NULL && 1)
++	{
++	 
++	 e_weight = get_tuple_weight(e->tuple, g->el);
++	 printf("e_weight is: %d \n", e_weight);
++	
++	}
++
++	for(f = e->next; f!=NULL; f=f->next)
++	{
++
++		 if (f->tuple != NULL && 1)
++		 {
++			
++			f_weight = get_tuple_weight(f->tuple, g->el);
++			printf("f_weight is: %d, e_weight is: %d \n", f_weight, e_weight);
++		 
++		 }
++
++		if(e_weight > f_weight)
++		 {
++					temp = e;
++					edge_print(temp);
++					id1 = e->id1;
++					id2 = e->id2;
++					t = e-> tuple;
++
++					e->id1 = f->id1;
++					e->id2 = f->id2;
++					e->tuple = f->tuple;
++					//update edge e's weight since it changed.
++					e_weight = get_tuple_weight(e->tuple, g->el);
++
++					f->id1 = id1;
++					f->id2 = id2;
++					f->tuple = t;
++	 		}
++
++			printf(" e's ids: %d %d\n",e->id1, e->id2 );
++			printf(" f's ids: %d %d\n",f->id1, f->id2 );
++		}	
++	
+  }
+ 
+  return g;
+@@ -101,11 +104,12 @@ graph_t sort_given_graph(graph_t g){
+ }
+ 
+ // A utitility function very similar to cli_graph_new function. 
+-graph_t init_graph(int id1){
++graph_t init_graph(int id1)
++{
+ 
+  graph_t g;
+  vertex_t v;
+-  
++	
+  // Create first vertex in graph /
+  v = (vertex_t) malloc(sizeof(struct vertex));
+  assert (v != NULL);
+@@ -119,7 +123,7 @@ graph_t init_graph(int id1){
+  graph_insert_vertex(g, v);
+ 
+  if (graphs == NULL)
+-  current = g;
++	current = g;
+  cli_graphs_insert(g);
+ 
+ }
+@@ -135,105 +139,110 @@ void run_kruskal(graph_t g, int num_vertices, int num_edges)
+  //storing the final MST edges.
+  edge_t current_edge;
+  graph_t result_graph =NULL;
+- graph_t temp;
++ graph_t sorted_graph;
+  vertex_t v;
+  vertex_t w;
+  
+- //qsort(g->e, num_edges, sizeof(struct edge), sort_helper);
+-temp = sort_given_graph(g);
++ sorted_graph = sort_given_graph(g);
+ 
+- graph_print(temp,1);
++ graph_print(sorted_graph,1);
+  printf("sorted \n");
+ 
++ 
+  //initializing parent vector
+  for (int j = 1; j <= V; ++j)
+-    {
+-        parent[j] = j;
+-    }
+-
+-    printf("initialized parent array \n");
+-    
+-    // terminating condition for mst
+-    while(e < (V-1))
+-    {
+-     
+-     current_edge = g->e;
+-   printf(" looking to add edge\n");
+-   //printf("source vertex: %d \t dest_vertex: %d \n", next_edge.source_vertex, next_edge.dest_vertex);
+-        int x = find(parent, current_edge->id1);
+-        int y = find(parent, current_edge->id2);
+-        printf("x= %d \t y = %d",x,y);
+-
+-        // If including this edge does't cause cycle, include it
+-        // in result and increment the index of result for next edge
+-        if (Union(parent, x, y))
+-        {
+-         printf("adding edge \n");
+-            //add edge to final result
+-            //graph_insert_edge(result_graph, current_edge);
+-            edge_print(current_edge);
+-            if(result_graph == NULL)
+-            {
+-    result_graph = init_graph(current_edge->id1);
+-
+-    // add vertex id2 now. 
+-
+-    v = (vertex_t) malloc(sizeof(struct vertex));
+-    assert (v != NULL);
+-    vertex_init(v);
+-    v->id = current_edge->id2;
+-
+-    graph_insert_vertex(result_graph, v);
+-            }
+-            else
+-            {
+-             v = graph_find_vertex_by_id(result_graph, current_edge->id1);
+-
+-             w = graph_find_vertex_by_id(result_graph, current_edge->id2);
+-
+-             // either of v or w would already be existing in the graph -- due to the rules of grdb which
+-             // does not allow two new vertices to be added to the graph.
+-             if (v == NULL) 
+-             {
+-                v = (vertex_t) malloc(sizeof(struct vertex));
+-                assert (v != NULL);
+-                vertex_init(v);
+-                v->id = current_edge->id1;
+-
+-                graph_insert_vertex(result_graph, v);
+-
+-    } 
+-    else if (w == NULL) 
+-    {
+-      w = (vertex_t) malloc(sizeof(struct vertex));
+-      assert (w != NULL);
+-      vertex_init(w);
+-      w->id =  current_edge->id2;
+-
+-      graph_insert_vertex(result_graph, w);
+-    }
+-             
+-            }
+-
+-            // increase edge count in the spanning tree
+-            e++;
+-           
+-        }
+-        // Else discard the next_edge
+-        g->e = g->e->next;
+-
+-    }
+-   
+-
+-
+-    return;
++ {
++			parent[j] = j;
++	}
++
++printf("initialized parent array \n");
++		
++	
++		// terminating condition for mst
++	while(e < (V-1))
++	{
++		 
++		 	printf("found %d edges in the MST: %d",e);
++		 	current_edge = g->e;
++		 	printf(" looking to add edge\n");
++			int x = find(parent, current_edge->id1);
++			int y = find(parent, current_edge->id2);
++
++			//printf("x= %d \t y = %d",x,y);
++
++				// If including this edge does't cause cycle, include it
++				// in result and increment the index of result for next edge
++			if (Union(parent, x, y))
++			{
++				printf("adding edge \n");
++				//add edge to final result
++				edge_print(current_edge);
++
++				
++				/*
++				if(result_graph == NULL)
++				{
++					result_graph = init_graph(current_edge->id1);
++
++					// add vertex id2 now. 
++
++					v = (vertex_t) malloc(sizeof(struct vertex));
++					assert (v != NULL);
++					vertex_init(v);
++					v->id = current_edge->id2;
++
++					graph_insert_vertex(result_graph, v);
++				}
++				else
++				{
++					v = graph_find_vertex_by_id(result_graph, current_edge->id1);
++
++					w = graph_find_vertex_by_id(result_graph, current_edge->id2);
++
++				 // either of v or w would already be existing in the graph -- due to the rules of grdb which
++				 // does not allow two new vertices to be added to the graph.
++				 if (v == NULL) 
++				 {
++						v = (vertex_t) malloc(sizeof(struct vertex));
++						assert (v != NULL);
++						vertex_init(v);
++						v->id = current_edge->id1;
++
++						graph_insert_vertex(result_graph, v);
++
++					} 
++					else if (w == NULL) 
++					{
++							w = (vertex_t) malloc(sizeof(struct vertex));
++							assert (w != NULL);
++							vertex_init(w);
++							w->id =  current_edge->id2;
++
++							graph_insert_vertex(result_graph, w);
++					}
++						 
++				}
++				*/
++
++				
++						// increase edge count in the spanning tree
++				e++;
++					 
++			}
++				// Else discard the next_edge
++			g->e = g->e->next;
++
++		} 
++		
++		
++		return;
+ }
+ 
+ void cli_kruskal(char cmdline, int pos)
+ {
+  printf("Kruskals algorithm: \n");
+ 
+-    // verify that there is a graph before running kruskal
++		// verify that there is a graph before running kruskal
+  assert (graphs != NULL);
+ 
+  graph_t g;
+@@ -244,16 +253,17 @@ void cli_kruskal(char cmdline, int pos)
+  int vertex_count = 0;
+  int edge_count = 0;
+ 
+- for (g = graphs; g != NULL; g = g->next, cnt++) {
+-  if (g == current){
+-   printf("current graph: \n");
+-   for (v = g->v; v != NULL; v = v->next) 
+-    vertex_count++; 
+-   printf("vertex count is: %d \n", vertex_count);
+-   for (e= g->e; e!= NULL; e=e->next)
+-    edge_count++;
+-   printf("edge count is: %d \n", edge_count);
+-   run_kruskal(g, vertex_count, edge_count);
++ for (g = graphs; g != NULL; g = g->next, cnt++) 
++ {
++		if (g == current){
++	 	printf("current graph: \n");
++	 	for(v = g->v; v != NULL; v = v->next) 
++	 		vertex_count++; 
++	 	printf("vertex count is: %d \n", vertex_count);
++	 	for (e= g->e; e!= NULL; e=e->next)
++	 		edge_count++;
++	 	printf("edge count is: %d \n", edge_count);
++	 	run_kruskal(g, vertex_count, edge_count);
+ 
+  }
+ }
+diff --git a/src/cli/cli_kruskal.o b/src/cli/cli_kruskal.o
+index ebdb167..f5fa3b4 100644
+Binary files a/src/cli/cli_kruskal.o and b/src/cli/cli_kruskal.o differ
+diff --git a/src/cli/db b/src/cli/db
+index c29ebcd..4615515 100755
+Binary files a/src/cli/db and b/src/cli/db differ
+
+commit 87cf4b75923d4b74c180a7c181abb4b6ce520670
+Author: narainsharma <narain280493@gmail.com>
+Date:   Thu Apr 27 01:36:38 2017 -0600
+
+    basic kruskal's algorithm with functioning sort
+
+diff --git a/doc/User's Guide.docx b/doc/User's Guide.docx
+index 6236e6d..609de59 100644
+Binary files a/doc/User's Guide.docx and b/doc/User's Guide.docx differ
+diff --git a/doc/~$er's Guide.docx b/doc/~$er's Guide.docx
+new file mode 100644
+index 0000000..d84abd0
+Binary files /dev/null and b/doc/~$er's Guide.docx differ
+diff --git a/src/a.out b/src/a.out
+new file mode 100755
+index 0000000..faaec5a
+Binary files /dev/null and b/src/a.out differ
+diff --git a/src/cli/Makefile b/src/cli/Makefile
+index 8e6941b..3cbb130 100644
+--- a/src/cli/Makefile
++++ b/src/cli/Makefile
+@@ -8,6 +8,7 @@ OBJS =	bufdump.o 			\
+ 	cli_graph.o			\
+ 	cli_graph_edge.o		\
+ 	cli_graph_new.o			\
++	cli_kruskal.o			\
+ 	cli_graph_schema.o		\
+ 	cli_graph_schema_add.o		\
+ 	cli_graph_tuple.o		\
+diff --git a/src/cli/a.out b/src/cli/a.out
+new file mode 100755
+index 0000000..fdfb40d
+Binary files /dev/null and b/src/cli/a.out differ
+diff --git a/src/cli/alltypes b/src/cli/alltypes
+new file mode 100644
+index 0000000..045ed02
+--- /dev/null
++++ b/src/cli/alltypes
+@@ -0,0 +1,13 @@
++g n
++g e 1 2
++g s e char i
++g s v bool k
++g s e int l
++g s v float m
++g s e double n
++g s v date d
++g s e time t
++g s v varchar s
++g s
++g t
++quit
+diff --git a/src/cli/bufdump.o b/src/cli/bufdump.o
+new file mode 100644
+index 0000000..af05a67
+Binary files /dev/null and b/src/cli/bufdump.o differ
+diff --git a/src/cli/cli.c b/src/cli/cli.c
+index 9f40c4e..6dd0e37 100644
+--- a/src/cli/cli.c
++++ b/src/cli/cli.c
+@@ -117,6 +117,13 @@ cli()
+ 			cli_graph(cmdline, &pos);
+ 			continue;
+ 		}
++
++		// to display results of kruskals algorithm?
++		else if (strcmp(cmd, "kruskal") == 0 || strcmp(cmd, "k") == 0){
++		cli_kruskal(cmdline, pos);
++
++		continue;}
++
+ 	}
+ }
+ 
+diff --git a/src/cli/cli.o b/src/cli/cli.o
+new file mode 100644
+index 0000000..f91d7fb
+Binary files /dev/null and b/src/cli/cli.o differ
+diff --git a/src/cli/cli_enum.o b/src/cli/cli_enum.o
+new file mode 100644
+index 0000000..3ba94d3
+Binary files /dev/null and b/src/cli/cli_enum.o differ
+diff --git a/src/cli/cli_graph.c b/src/cli/cli_graph.c
+index 29dfe16..dc18d7a 100644
+--- a/src/cli/cli_graph.c
++++ b/src/cli/cli_graph.c
+@@ -10,6 +10,8 @@ void cli_graph_new(char *cmdline, int *pos);
+ void cli_graph_edge(char *cmdline, int *pos);
+ void cli_graph_schema(char *cmdline, int *pos);
+ void cli_graph_tuple(char *cmdline, int *pos);
++void cli_kruskal(char *cmdline, int *pos);
++
+ 
+ static void
+ cli_graph_print()
+@@ -49,6 +51,10 @@ cli_graph(char *cmdline, int *pos)
+ 	else if (strcmp(s, "tuple") == 0 || strcmp(s, "t") == 0)
+ 		cli_graph_tuple(cmdline, pos);
+ 
++	else if (strcmp(s, "kruskal") == 0 || strcmp(s, "k") == 0)
++		cli_kruskal(cmdline, pos);
++
++
+ 	else if (isdigit(s[0])) {
+ 		graph_t g;
+ 		int i, cnt;
+diff --git a/src/cli/cli_graph.o b/src/cli/cli_graph.o
+new file mode 100644
+index 0000000..173afb0
+Binary files /dev/null and b/src/cli/cli_graph.o differ
+diff --git a/src/cli/cli_graph_edge.o b/src/cli/cli_graph_edge.o
+new file mode 100644
+index 0000000..e6eaf23
+Binary files /dev/null and b/src/cli/cli_graph_edge.o differ
+diff --git a/src/cli/cli_graph_new.o b/src/cli/cli_graph_new.o
+new file mode 100644
+index 0000000..490e810
+Binary files /dev/null and b/src/cli/cli_graph_new.o differ
+diff --git a/src/cli/cli_graph_schema.o b/src/cli/cli_graph_schema.o
+new file mode 100644
+index 0000000..014ad9c
+Binary files /dev/null and b/src/cli/cli_graph_schema.o differ
+diff --git a/src/cli/cli_graph_schema_add.o b/src/cli/cli_graph_schema_add.o
+new file mode 100644
+index 0000000..4e36e3f
+Binary files /dev/null and b/src/cli/cli_graph_schema_add.o differ
+diff --git a/src/cli/cli_graph_tuple.o b/src/cli/cli_graph_tuple.o
+new file mode 100644
+index 0000000..2ffc635
+Binary files /dev/null and b/src/cli/cli_graph_tuple.o differ
+diff --git a/src/cli/cli_graph_update_tuples.o b/src/cli/cli_graph_update_tuples.o
+new file mode 100644
+index 0000000..93e9b57
+Binary files /dev/null and b/src/cli/cli_graph_update_tuples.o differ
+diff --git a/src/cli/cli_kruskal.c b/src/cli/cli_kruskal.c
+new file mode 100644
+index 0000000..0464664
+--- /dev/null
++++ b/src/cli/cli_kruskal.c
+@@ -0,0 +1,260 @@
++#include <assert.h>
++#include <stdio.h>
++#include <stdlib.h>
++#include <string.h>
++#include "cli.h"
++#include "graph.h"
++
++
++
++int find(int parent[], int i)
++{
++
++ printf("inside find function for %d \n", i);
++  
++  return parent[i];
++}
++ 
++int Union(int parent[], int v1, int v2)
++{ 
++
++ printf("inside union function: v1= %d \t v2= %d \n",v1,v2);
++
++ if(v1 != v2)
++ {
++  printf("v1 !=v2\n ");
++  parent[v2]=v1;
++  printf("returning \n");
++    return 1;
++    
++  }
++ return 0;
++
++}
++
++// TODO: use schema values for edges as weights.
++int sort_helper(const void* a, const void* b)
++{
++    struct edge* e1 = (struct edge*)a;
++    struct edge* e2 = (struct edge*)b;
++    return e1->tuple->s > e2->tuple->s;
++}
++
++
++
++graph_t sort_given_graph(graph_t g){
++
++ assert(g!=NULL);
++ edge_t e;
++ edge_t f;
++ edge_t temp;
++ tuple_t t;
++ int id1 =0; 
++ int id2 =0;
++ int e_weight = 0;
++ int f_weight = 0;
++ printf("sorting graphs: \n");
++
++ for (e = g->e; e->next != NULL; e = e->next) {
++
++  if (e->tuple != NULL && 1)
++  {
++   e_weight = get_tuple_weight(e->tuple, g->el);
++   printf("e_weight is: %d \n", e_weight);
++  }
++  for(f = e->next; f!=NULL; f=f->next){
++
++   if (f->tuple != NULL && 1)
++   {
++    f_weight = get_tuple_weight(f->tuple, g->el);
++    printf("f_weight is: %d \n", f_weight);
++   }
++
++
++
++  
++  if(e_weight > f_weight)
++   {
++    temp = e;
++    edge_print(temp);
++    id1 = e->id1;
++    id2 = e->id2;
++    t = e-> tuple;
++
++    e->id1 = f->id1;
++    e->id2 = f->id2;
++    e->tuple = f->tuple;
++
++    f->id1 = id1;
++    f->id2 = id2;
++    f->tuple = t;
++   }
++
++  
++  }
++  
++ }
++
++ return g;
++ //graph_print(g,1);
++ 
++}
++
++// A utitility function very similar to cli_graph_new function. 
++graph_t init_graph(int id1){
++
++ graph_t g;
++ vertex_t v;
++  
++ // Create first vertex in graph /
++ v = (vertex_t) malloc(sizeof(struct vertex));
++ assert (v != NULL);
++ vertex_init(v);
++ v->id = id1;
++
++ // Create new graph /
++ g = (graph_t) malloc(sizeof(struct graph));
++ assert (g != NULL);
++ graph_init(g);
++ graph_insert_vertex(g, v);
++
++ if (graphs == NULL)
++  current = g;
++ cli_graphs_insert(g);
++
++}
++
++void run_kruskal(graph_t g, int num_vertices, int num_edges)
++{
++ int parent[20];
++ int V = num_vertices;
++ int i=0;
++ int e=0;
++ int total_cost =0;
++
++ //storing the final MST edges.
++ edge_t current_edge;
++ graph_t result_graph =NULL;
++ graph_t temp;
++ vertex_t v;
++ vertex_t w;
++ 
++ //qsort(g->e, num_edges, sizeof(struct edge), sort_helper);
++temp = sort_given_graph(g);
++
++ graph_print(temp,1);
++ printf("sorted \n");
++
++ //initializing parent vector
++ for (int j = 1; j <= V; ++j)
++    {
++        parent[j] = j;
++    }
++
++    printf("initialized parent array \n");
++    
++    // terminating condition for mst
++    while(e < (V-1))
++    {
++     
++     current_edge = g->e;
++   printf(" looking to add edge\n");
++   //printf("source vertex: %d \t dest_vertex: %d \n", next_edge.source_vertex, next_edge.dest_vertex);
++        int x = find(parent, current_edge->id1);
++        int y = find(parent, current_edge->id2);
++        printf("x= %d \t y = %d",x,y);
++
++        // If including this edge does't cause cycle, include it
++        // in result and increment the index of result for next edge
++        if (Union(parent, x, y))
++        {
++         printf("adding edge \n");
++            //add edge to final result
++            //graph_insert_edge(result_graph, current_edge);
++            edge_print(current_edge);
++            if(result_graph == NULL)
++            {
++    result_graph = init_graph(current_edge->id1);
++
++    // add vertex id2 now. 
++
++    v = (vertex_t) malloc(sizeof(struct vertex));
++    assert (v != NULL);
++    vertex_init(v);
++    v->id = current_edge->id2;
++
++    graph_insert_vertex(result_graph, v);
++            }
++            else
++            {
++             v = graph_find_vertex_by_id(result_graph, current_edge->id1);
++
++             w = graph_find_vertex_by_id(result_graph, current_edge->id2);
++
++             // either of v or w would already be existing in the graph -- due to the rules of grdb which
++             // does not allow two new vertices to be added to the graph.
++             if (v == NULL) 
++             {
++                v = (vertex_t) malloc(sizeof(struct vertex));
++                assert (v != NULL);
++                vertex_init(v);
++                v->id = current_edge->id1;
++
++                graph_insert_vertex(result_graph, v);
++
++    } 
++    else if (w == NULL) 
++    {
++      w = (vertex_t) malloc(sizeof(struct vertex));
++      assert (w != NULL);
++      vertex_init(w);
++      w->id =  current_edge->id2;
++
++      graph_insert_vertex(result_graph, w);
++    }
++             
++            }
++
++            // increase edge count in the spanning tree
++            e++;
++           
++        }
++        // Else discard the next_edge
++        g->e = g->e->next;
++
++    }
++   
++
++
++    return;
++}
++
++void cli_kruskal(char cmdline, int pos)
++{
++ printf("Kruskals algorithm: \n");
++
++    // verify that there is a graph before running kruskal
++ assert (graphs != NULL);
++
++ graph_t g;
++ vertex_t v;
++ edge_t e;
++ // graph count
++ int cnt = 0;
++ int vertex_count = 0;
++ int edge_count = 0;
++
++ for (g = graphs; g != NULL; g = g->next, cnt++) {
++  if (g == current){
++   printf("current graph: \n");
++   for (v = g->v; v != NULL; v = v->next) 
++    vertex_count++; 
++   printf("vertex count is: %d \n", vertex_count);
++   for (e= g->e; e!= NULL; e=e->next)
++    edge_count++;
++   printf("edge count is: %d \n", edge_count);
++   run_kruskal(g, vertex_count, edge_count);
++
++ }
++}
++}
+\ No newline at end of file
+diff --git a/src/cli/cli_kruskal.o b/src/cli/cli_kruskal.o
+new file mode 100644
+index 0000000..ebdb167
+Binary files /dev/null and b/src/cli/cli_kruskal.o differ
+diff --git a/src/cli/db b/src/cli/db
+new file mode 100755
+index 0000000..c29ebcd
+Binary files /dev/null and b/src/cli/db differ
+diff --git a/src/cli/lex.o b/src/cli/lex.o
+new file mode 100644
+index 0000000..810e4f6
+Binary files /dev/null and b/src/cli/lex.o differ
+diff --git a/src/cli/main.o b/src/cli/main.o
+new file mode 100644
+index 0000000..166e7ce
+Binary files /dev/null and b/src/cli/main.o differ
+diff --git a/src/cli/myscript b/src/cli/myscript
+new file mode 100644
+index 0000000..d25f8bb
+--- /dev/null
++++ b/src/cli/myscript
+@@ -0,0 +1,9 @@
++g n
++g e 1 2
++g e 1 3
++g e 2 3
++g s e int i
++g t 1 2 i 4
++g t 1 3 i 3
++g t 2 3 i 1
++g k
+\ No newline at end of file
+diff --git a/src/db/edge.o b/src/db/edge.o
+new file mode 100644
+index 0000000..a1ebf2c
+Binary files /dev/null and b/src/db/edge.o differ
+diff --git a/src/db/enum.o b/src/db/enum.o
+new file mode 100644
+index 0000000..56e4245
+Binary files /dev/null and b/src/db/enum.o differ
+diff --git a/src/db/graph.o b/src/db/graph.o
+new file mode 100644
+index 0000000..346689b
+Binary files /dev/null and b/src/db/graph.o differ
+diff --git a/src/db/libdb.a b/src/db/libdb.a
+new file mode 100644
+index 0000000..4f3c574
+Binary files /dev/null and b/src/db/libdb.a differ
+diff --git a/src/db/schema.o b/src/db/schema.o
+new file mode 100644
+index 0000000..ecaa3ee
+Binary files /dev/null and b/src/db/schema.o differ
+diff --git a/src/db/string_pool.o b/src/db/string_pool.o
+new file mode 100644
+index 0000000..a58c36c
+Binary files /dev/null and b/src/db/string_pool.o differ
+diff --git a/src/db/tuple.o b/src/db/tuple.o
+new file mode 100644
+index 0000000..58c7f50
+Binary files /dev/null and b/src/db/tuple.o differ
+diff --git a/src/db/tuple_print.c b/src/db/tuple_print.c
+index b527c70..10fc6bd 100644
+--- a/src/db/tuple_print.c
++++ b/src/db/tuple_print.c
+@@ -109,3 +109,39 @@ tuple_print(tuple_t t, enum_list_t el)
+ 	}
+ 	printf("]");
+ }
++
++
++int 
++get_tuple_weight(tuple_t t, enum_list_t el)
++{
++ attribute_t attr;
++ int i, offset, val;
++ float fval;
++ double dval;
++
++ assert (t != NULL);
++ assert (t->buf != NULL);
++
++ //printf("[");
++
++ for (attr = t->s->attrlist; attr != NULL; attr = attr->next) {
++  offset = tuple_get_offset(t, attr->name);
++  if (offset >= 0) {
++   switch (attr->bt) {
++   
++   case INTEGER:
++    i = tuple_get_int(t->buf + offset);
++    //printf("%d", i);
++    return i;
++
++    break;
++
++   case BASE_TYPES_MAX:
++    break;
++   }
++  }
++
++  
++ }
++ return -1;
++}
+\ No newline at end of file
+diff --git a/src/db/tuple_print.o b/src/db/tuple_print.o
+new file mode 100644
+index 0000000..5523b9e
+Binary files /dev/null and b/src/db/tuple_print.o differ
+diff --git a/src/db/tuple_set.o b/src/db/tuple_set.o
+new file mode 100644
+index 0000000..10246a2
+Binary files /dev/null and b/src/db/tuple_set.o differ
+diff --git a/src/db/tuple_util.o b/src/db/tuple_util.o
+new file mode 100644
+index 0000000..6848022
+Binary files /dev/null and b/src/db/tuple_util.o differ
+diff --git a/src/db/vertex.o b/src/db/vertex.o
+new file mode 100644
+index 0000000..840f265
+Binary files /dev/null and b/src/db/vertex.o differ
+diff --git a/src/db/vertexid.o b/src/db/vertexid.o
+new file mode 100644
+index 0000000..b001043
+Binary files /dev/null and b/src/db/vertexid.o differ
